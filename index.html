@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Critertec · Portafolio 2026</title>
+<meta name="description" content="Portafolio 2026 de Critertec Educación: estudio creativo de proyectos educativos en Latinoamérica. Proyectos, premios, alianzas oficiales y prensa.">
+
+<!--
+  Portafolio Critertec 2026 · versión larga.
+
+  Es la que sustenta una licitación, una alianza o una conversación con cooperación
+  internacional: los proyectos uno por uno, los premios con su enlace de referencia, los
+  reconocimientos del CEO y la prensa completa.
+
+  La versión corta es corto.html y sale del mismo contenido.js. Lo único que cambia entre
+  las dos es el PLAN de abajo.
+
+  Se abre con doble clic o se sirve desde cualquier servidor estático. Para exportar a PDF:
+  imprimir desde el navegador en horizontal, o recorrer las láminas con F en pantalla completa.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portafolio.css">
+
+<div class="riel-sup">
+  <img class="logo" id="logo" src="assets/logo/02-blanco-punto-coral.png" alt="Critertec">
+  <span class="riel-txt" id="seccion">Portafolio</span>
+  <span class="crece"></span>
+  <button class="ico" id="tema" aria-label="Cambiar entre tema claro y oscuro">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <button class="ico" id="pantalla" aria-label="Pantalla completa">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+</div>
+
+<div id="deck"></div>
+
+<!-- Zonas de clic: duplican las flechas del teclado, así que salen del orden de
+     tabulación. Con foco, el anillo coral dibuja una línea vertical a lo alto de la
+     lámina, porque el botón mide toda la altura y solo se ve su canto. -->
+<button class="zona izq" id="atras" tabindex="-1" aria-hidden="true"></button>
+<button class="zona der" id="adelante" tabindex="-1" aria-hidden="true"></button>
+
+<div class="riel-inf">
+  <span class="riel-txt">Critertec · Portafolio 2026</span>
+  <span class="crece"></span>
+  <button class="ico" id="indice" aria-label="Ver todas las láminas">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+      <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+  </button>
+  <span class="contador" id="contador"><i></i><span>01</span></span>
+</div>
+
+<div class="avance" id="avance"></div>
+
+<div id="general" role="dialog" aria-label="Todas las láminas" aria-modal="true">
+  <h2>Todas las láminas</h2>
+  <div class="rejilla" id="rejilla"></div>
+</div>
+
+<script type="module">
+  // El orden vive en planes.js, no aquí: así verificar.mjs puede comprobarlo sin navegador.
+  import { arranca } from './motor.js';
+  import { LARGO } from './planes.js';
+  arranca(LARGO);
+</script>

@@ -1,0 +1,937 @@
+/* ============================================================
+   Portafolio Critertec 2026 · hoja de estilo compartida
+   La usan las dos versiones: index.html (larga) y corto.html
+   (corta). Los tokens son los del Manifiesto de Marca; los
+   componentes vienen del deck de la junta de septiembre de 2026,
+   que es la base visual acordada.
+
+   Orden del archivo:
+     1. tokens, escenario y tipografía
+     2. componentes heredados del deck de la junta
+     3. componentes propios del portafolio (marcados abajo)
+   ============================================================ */
+:root{
+  --ink:#12103A; --bone:#FBFAF7; --white:#fff;
+  --coral:#FF1E56; --azul:#1E6BFF; --cian:#35D2C4; --amarillo:#FFD93D;
+  color-scheme:dark;
+
+  --fondo:var(--ink); --texto:var(--white);
+  --texto-2:rgba(255,255,255,.70); --texto-3:rgba(255,255,255,.45);
+  --borde:rgba(255,255,255,.16); --borde-2:rgba(255,255,255,.28);
+  --dato:#5B8CFF; --off:rgba(255,255,255,.18);
+
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --sans:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',monospace;
+
+  --marco:clamp(26px,4.2vw,72px);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --fondo:var(--bone); --texto:var(--ink);
+  --texto-2:rgba(18,16,58,.64); --texto-3:rgba(18,16,58,.42);
+  --borde:rgba(18,16,58,.14); --borde-2:rgba(18,16,58,.24);
+  --dato:var(--azul); --off:rgba(18,16,58,.16);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--fondo);color:var(--texto);font-family:var(--sans);
+  overflow:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+p{margin:0}
+
+/* ---------- escenario ---------- */
+#deck{position:fixed;inset:0;z-index:1}
+/* Campo de puntos de fondo: detrás de todo, sin eventos; se funde al cambiar de lámina. */
+#fondo-puntos{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;
+  transition:opacity .6s var(--ease)}
+/* El latido común (lub-dub): el punto de cada titular y el del contador laten juntos. El ciclo
+   es el doble del pulso de los lienzos (1,4 s), para acompañar sin distraer. */
+@keyframes latido{0%,100%{transform:scale(1)}6%{transform:scale(1.55)}13%{transform:scale(1)}
+  20%{transform:scale(1.3)}28%{transform:scale(1)}}
+.titular .punto,.portada-tit .punto{display:inline-block;color:var(--coral);transform-origin:50% 78%;
+  margin-left:.06em}
+.slide.viva .titular .punto,.slide.viva .portada-tit .punto{animation:latido 2.8s var(--ease) infinite .8s}
+@media (prefers-reduced-motion:reduce){.slide.viva .titular .punto,.contador i{animation:none}}
+.slide{position:absolute;inset:0;overflow:hidden;
+  padding:calc(var(--marco) + 38px) var(--marco) calc(var(--marco) + 32px);
+  display:flex;flex-direction:column;justify-content:center;gap:clamp(13px,2.1vh,30px);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .5s var(--ease),transform .6s var(--ease);transform:translateY(20px)}
+.slide.viva{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.slide.salio{transform:translateY(-16px)}
+.slide.compacta{gap:clamp(7px,1vh,14px);padding-block:calc(var(--marco) + 13px) calc(var(--marco) + 19px)}
+.slide.centro{justify-content:center;align-items:center;text-align:center}
+/* La lámina del logo viejo va sobre fondo claro: el corte a oscuro es el cambio de marca. */
+.slide.claro{background:var(--bone);color:var(--ink)}
+.slide.claro .apagado{color:rgba(18,16,58,.38)}
+.slide.claro .eyebrow{color:rgba(18,16,58,.5)}
+.slide.claro .eyebrow::before{background:rgba(18,16,58,.22)}
+/* En la lámina del logo viejo, el nuevo no debe asomar en el riel: arruina la revelación. */
+:root[data-claro="1"] .logo{visibility:hidden}
+:root[data-claro="1"] .riel-txt,:root[data-claro="1"] .contador{color:rgba(18,16,58,.45)}
+:root[data-claro="1"] .ico{color:rgba(18,16,58,.6);border-color:rgba(18,16,58,.22)}
+:root[data-claro="1"] .seg{border-color:rgba(18,16,58,.22)}
+:root[data-claro="1"] .seg button{color:rgba(18,16,58,.64)}
+:root[data-claro="1"] .seg button[aria-pressed="true"]{background:#12103A;color:#FBFAF7}
+
+.pieza{opacity:0;transform:translateY(16px);
+  transition:opacity .55s var(--ease),transform .65s var(--ease);
+  transition-delay:calc(var(--d,0) * 85ms + 90ms)}
+.slide.viva .pieza{opacity:1;transform:none}
+/* Variante que solo anima opacidad: para piezas que ya usan transform para colocarse. */
+.entra{opacity:0;transition:opacity .6s var(--ease);transition-delay:calc(var(--d,0) * 85ms + 110ms)}
+.slide.viva .entra{opacity:1}
+.slide .entra.oculto{opacity:0}
+
+
+/* ---------- tipografía ---------- */
+.eyebrow{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.17em;
+  text-transform:uppercase;color:var(--texto-3);display:flex;align-items:center;gap:13px}
+.eyebrow::before{content:'';width:clamp(20px,3vw,44px);height:1px;background:var(--borde-2);flex:none}
+.slide.centro .eyebrow{justify-content:center}
+.titular{font-family:var(--display);font-weight:800;line-height:.95;letter-spacing:-.034em;
+  font-size:clamp(2rem,min(6vw,8.2vh),5.4rem);max-width:17ch;text-wrap:balance}
+.titular.xl{font-size:clamp(2.3rem,min(7.6vw,10vh),7rem);max-width:14ch}
+.slide.centro .titular{max-width:20ch}
+.slide.compacta .titular{font-size:clamp(1.4rem,min(3.2vw,4.4vh),2.4rem);max-width:26ch}
+.slide.compacta .barras{gap:clamp(5px,.9vh,12px)}
+.slide.compacta .barra .fila{margin-bottom:4px}
+.slide.compacta .comp > div{padding:clamp(4px,.78vh,10px) clamp(9px,1.1vw,17px)}
+.slide.compacta .datos > div{padding:clamp(9px,1.35vh,18px) clamp(12px,1.3vw,22px)}
+.apagado{color:var(--texto-3)}
+.bajada{font-size:clamp(1rem,min(1.4vw,2.2vh),1.7rem);color:var(--texto-2);max-width:60ch;line-height:1.46}
+.slide.centro .bajada{max-width:54ch}
+.pie-dato{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.08em;
+  color:var(--texto-3);text-transform:uppercase}
+.cita{font-size:clamp(1rem,min(1.4vw,2.2vh),1.7rem);border-left:2px solid var(--coral);
+  padding-left:clamp(13px,1.3vw,21px);max-width:54ch;font-style:italic}
+
+/* ---------- logo imponente ---------- */
+.logo-hero{display:block;margin:0 auto;max-width:min(62vw,820px);max-height:44vh;width:auto;height:auto}
+.logo-hero.viejo{max-width:min(26vw,300px);max-height:40vh}
+.tachado{position:relative;display:inline-block}
+
+
+/* ---------- cambios numerados ---------- */
+.cambios{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:1px;background:var(--borde);
+  border:1px solid var(--borde)}
+.cambios > div{background:var(--fondo);padding:clamp(15px,2.2vh,28px) clamp(14px,1.5vw,26px);
+  display:flex;flex-direction:column;gap:9px}
+.cambios .nn{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.14em;
+  color:var(--coral)}
+.cambios h3{font-family:var(--display);font-weight:800;letter-spacing:-.024em;margin:0;
+  font-size:clamp(1rem,1.75vw,1.5rem);line-height:1.08}
+.cambios p{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2)}
+
+
+/* ---------- los tres diferenciales · columnas con foto ---------- */
+.principios{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--borde);
+  border:1px solid var(--borde);flex:1;min-height:0}
+.principio{background:var(--fondo);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.principio .foto{position:relative;flex:none;aspect-ratio:16/9;overflow:hidden}
+.principio .foto img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(.28) contrast(1.05) brightness(.95);
+  transition:transform 1.4s var(--ease),filter .6s ease}
+.principio:hover .foto img{transform:scale(1.05);filter:grayscale(0) brightness(1)}
+.principio .foto::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,var(--fondo) 1%,rgba(18,16,58,.3) 26%,transparent 60%)}
+.principio .txt{padding:clamp(14px,2.2vh,28px) clamp(15px,1.7vw,30px) clamp(16px,2.4vh,30px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  flex:1;min-height:0;gap:clamp(8px,1.2vh,15px)}
+.principio .nn{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.18em;
+  text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px}
+.principio .nn::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
+.principio h3{font-family:var(--display);font-weight:800;letter-spacing:-.03em;margin:0;line-height:1.02;
+  font-size:clamp(1.2rem,min(2.6vw,4.2vh),2.3rem)}
+.principio p{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2);line-height:1.44;max-width:30ch}
+.principio .marca-dato{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--c);padding-top:clamp(7px,1vh,12px);
+  border-top:1px solid var(--borde);margin-top:clamp(3px,.5vh,7px)}
+
+/* ---------- muro de aliados ---------- */
+/* Tablero blanco en los dos temas: los logos van tal cual, a color. Ocho columnas y las filas
+   que haga falta, repartidas en el alto disponible. */
+.aliados{flex:1;min-height:0;background:#fff;border-radius:6px;display:grid;
+  grid-template-columns:repeat(8,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);
+  gap:clamp(4px,.8vh,10px) clamp(12px,1.6vw,28px);padding:clamp(16px,2.6vh,34px) clamp(18px,2.2vw,40px)}
+.aliados div{display:grid;place-items:center;min-height:0;min-width:0}
+.aliados img{max-width:100%;max-height:min(100%,clamp(26px,5.4vh,60px));width:auto;height:auto;display:block}
+@media (max-width:860px){.aliados{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:64px}}
+
+
+/* ---------- lista genérica ---------- */
+.lista{display:grid;border-top:1px solid var(--borde)}
+.lista .it{display:grid;grid-template-columns:minmax(120px,.8fr) 3fr auto;gap:clamp(12px,2.2vw,38px);
+  align-items:baseline;padding:clamp(5px,1vh,12px) 0;border-bottom:1px solid var(--borde)}
+.lista .n{font-family:var(--display);font-weight:800;letter-spacing:-.026em;font-size:clamp(1.15rem,min(2vw,3.2vh),2.2rem)}
+.lista .cl{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2)}
+.lista .e{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--texto-3);white-space:nowrap}
+.lista .it.tenue .n{color:var(--texto-3)}
+.lista .it.tenue .e{color:var(--dato)}
+
+/* ---------- proyectos ---------- */
+.proyectos{display:grid;border-top:1px solid var(--borde)}
+.proy{display:grid;grid-template-columns:minmax(130px,1fr) auto minmax(90px,auto) 2.6fr;
+  gap:clamp(11px,1.6vw,26px);align-items:baseline;padding:clamp(5px,.95vh,11px) 0;
+  border-bottom:1px solid var(--borde)}
+.proy .p{font-family:var(--display);font-weight:600;font-size:clamp(1rem,min(1.4vw,2.2vh),1.7rem)}
+.proy .v{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-space:nowrap;
+  font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem)}
+.proy .d{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2)}
+.chip{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.11em;text-transform:uppercase;
+  padding:2px 8px;border:1px solid var(--c);color:var(--c);white-space:nowrap;border-radius:999px}
+
+/* ---------- carrusel ---------- */
+/* La fila va declarada `minmax(0,1fr)` y no `auto`. Con `auto` el alto de la fila lo fija el
+   contenido, así que ajustarMosaico() medía la caja ya crecida por las teselas del render
+   anterior, creía tener más alto del que hay y elegía una fila de más: el mosaico se salía
+   por abajo y `overflow:hidden` la cortaba a media foto. */
+.carrusel{display:grid;grid-template-columns:1fr clamp(160px,20vw,280px);
+  grid-template-rows:minmax(0,1fr);gap:clamp(14px,1.8vw,28px);
+  flex:1;min-height:0}
+/* Mosaico de campo: filas justificadas que respetan la proporción de cada foto.
+   Las fotos van de 0,55 a 1,79, así que una cuadrícula de celdas iguales recortaba las
+   verticales casi por completo. Aquí cada una crece en proporción a su propio ancho y la
+   fila entera se ajusta; --fila la calcula ajustarMosaico() según lo que quepa. */
+.mosaico{position:relative;display:flex;flex-wrap:wrap;align-content:center;gap:3px;
+  min-height:0;overflow:hidden}
+.mosaico > i{display:block;overflow:hidden;
+  /* ajustarMosaico() fija alto y base de cada foto; esto es solo el estado inicial. */
+  height:150px;flex:0 0 calc(var(--ar,1.5) * 150px);
+  opacity:0;transition:opacity .5s var(--ease);transition-delay:calc(var(--d,0) * 55ms + 120ms)}
+.slide.viva .mosaico > i{opacity:1}
+.mosaico img{width:100%;height:100%;object-fit:cover;display:block}
+/* Relleno invisible que absorbe el sobrante de la última fila. Sin él, los pocos elementos
+   que quedan al final se estiran para llenar el ancho y se recortan de más. */
+.mosaico::after{content:'';flex:1e6 0 0;height:0;min-width:0}
+.mosaico .pie{position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:clamp(28px,4vh,52px) clamp(14px,1.4vw,22px) clamp(11px,1.4vh,18px);
+  background:linear-gradient(transparent,rgba(18,16,58,.94));color:#fff;
+  font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.1em;text-transform:uppercase}
+.selector{display:flex;flex-direction:column;gap:2px;overflow-y:auto;min-height:0}
+.selector button{background:none;border:0;border-left:2px solid transparent;color:var(--texto-3);
+  font:inherit;font-size:clamp(.9rem,min(1.2vw,1.9vh),1.4rem);text-align:left;padding:clamp(5px,.9vh,9px) 11px;cursor:pointer;
+  display:flex;justify-content:space-between;gap:9px;align-items:baseline}
+.selector button:hover{color:var(--texto)}
+.selector button[aria-pressed="true"]{color:var(--texto);border-left-color:var(--coral);
+  background:color-mix(in srgb,var(--texto) 5%,transparent)}
+.selector .cn{font-family:var(--mono);font-size:.68em;letter-spacing:.08em;color:var(--texto-3)}
+
+
+/* ---------- las tres verticales · pantalla partida en diagonal ---------- */
+.slide.diagonal{padding:0;gap:0}
+.diag{position:absolute;inset:0;background:var(--ink)}
+.diag-panel{position:absolute;inset:0;overflow:hidden}
+/* La cuña cerrada solo enseña una franja de la pantalla, así que el motivo de la foto —que
+   está centrado— caería fuera de ella. --desliz corre la foto para que el motivo aterrice
+   dentro de su franja; al expandirse el panel ocupa todo y la foto vuelve a su sitio. */
+.diag-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:center 18%;transform:translateX(var(--desliz,0));transition:transform .85s var(--ease);
+  filter:grayscale(.34) brightness(.8) contrast(1.04)}
+.slide .diag-panel.abierto img{transform:none}
+.diag-panel .tinte{position:absolute;inset:0;background:var(--c);opacity:.3;mix-blend-mode:multiply}
+.diag-panel .oscuro{position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(18,16,58,.94) 8%,rgba(18,16,58,.55) 52%,rgba(18,16,58,.3) 100%)}
+.diag-panel{cursor:pointer}
+.diag-cont{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:clamp(8px,1.3vh,17px);z-index:3;pointer-events:none;
+  transition:opacity .45s ease}
+.diag-regla{height:3px;width:clamp(58px,7vw,110px);border-radius:2px}
+.diag-cod{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.72)}
+.marca-v{font-family:var(--display);line-height:.92;letter-spacing:-.038em;color:#fff;
+  font-size:clamp(1.6rem,min(3.5vw,5.6vh),3.4rem)}
+.marca-v b{font-weight:800}
+.marca-v i{font-style:italic;font-weight:600;color:rgba(255,255,255,.72)}
+.marca-v .punto{color:var(--c);font-weight:800}
+.diag-cont p{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:rgba(255,255,255,.8);line-height:1.42}
+
+/* Estado expandido: la cuña ocupa la pantalla y aparece el detalle a dos columnas. */
+.diag-panel{transition:clip-path .85s var(--ease),opacity .5s ease}
+.slide .diag-panel.abierto{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)!important;cursor:default}
+.slide .diag-panel.cerrado{opacity:0;pointer-events:none}
+.diag-cont.oculto{opacity:0}
+.diag-detalle{position:absolute;inset:0;z-index:6;display:grid;
+  grid-template-columns:.9fr 1.1fr;align-items:center;gap:clamp(28px,5vw,88px);
+  padding:calc(var(--marco) + 34px) var(--marco) calc(var(--marco) + 30px);
+  opacity:0;pointer-events:none;transition:opacity .5s ease .28s;cursor:pointer}
+.diag-detalle.on{opacity:1;pointer-events:auto}
+.diag-detalle .izq{display:flex;flex-direction:column;gap:clamp(13px,2.1vh,26px)}
+.diag-detalle .diag-cod{font-size:clamp(.8rem,min(1.1vw,1.75vh),1.3rem);letter-spacing:.2em}
+.diag-detalle .diag-regla{height:5px;width:clamp(90px,11vw,180px)}
+.diag-detalle .marca-v{font-size:clamp(2.5rem,min(6.2vw,9.6vh),6rem)}
+.diag-detalle .der{display:flex;flex-direction:column;gap:clamp(12px,1.9vh,24px)}
+.diag-detalle .der p{font-size:clamp(1.05rem,min(1.85vw,3vh),1.8rem);color:#fff;line-height:1.38;max-width:34ch}
+.diag-detalle ul{margin:0;padding:0;list-style:none;display:grid;gap:clamp(6px,.95vh,12px)}
+.diag-detalle li{font-size:clamp(.95rem,min(1.35vw,2.2vh),1.35rem);color:rgba(255,255,255,.84);
+  padding-left:clamp(22px,1.8vw,32px);position:relative}
+.diag-detalle li::before{content:'';position:absolute;left:0;top:.5em;
+  width:clamp(9px,.8vw,13px);height:clamp(9px,.8vw,13px);border-radius:50%;background:var(--c)}
+.diag-cerrar{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.55)}
+
+/* ---------- portada: el punto hecho de puntos ----------
+   El lienzo ocupa la lámina entera; el texto va encima, a la izquierda, y la cifra abajo a la
+   derecha, bajo el gran punto. */
+.slide.portada{padding:0;gap:0;justify-content:center}
+.puntos{position:absolute;inset:0;width:100%;height:100%;display:block}
+.portada-cont{position:relative;padding:0 var(--marco);max-width:min(58%,980px);
+  display:flex;flex-direction:column;gap:clamp(12px,2.2vh,28px)}
+.portada-logo{width:clamp(220px,34vw,620px);height:auto;display:block;
+  margin:clamp(4px,1vh,12px) 0 clamp(6px,1.6vh,20px)}
+.portada-tit{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.04em;
+  line-height:.98;font-size:clamp(1.9rem,min(4.4vw,7vh),5rem);text-wrap:balance}
+.portada-tit .apagado{color:var(--texto-3)}
+/* Sin negrilla: a este tamaño el peso alto la vuelve un bloque y deja de leerse como frase. */
+.portada-frase{font-family:var(--display);font-weight:400;letter-spacing:-.02em;line-height:1.15;
+  font-size:clamp(1.05rem,min(1.8vw,2.9vh),2rem);max-width:32ch;color:var(--texto-2);text-wrap:balance}
+.portada-frase .punto{color:var(--coral)}
+.portada-cifra{position:absolute;right:var(--marco);bottom:calc(var(--marco) + 34px);
+  display:flex;align-items:flex-end;gap:14px;text-align:right}
+.portada-cifra b{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:.85;
+  font-size:clamp(2.2rem,min(5vw,8vh),5.6rem)}
+.portada-cifra span{font-family:var(--mono);font-size:clamp(.68rem,min(.88vw,1.4vh),1rem);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--texto-2);line-height:1.6}
+.portada-cifra i{font-style:normal;color:var(--coral)}
+/* En la portada el logo grande hace de firma: el del riel y su rótulo sobran. */
+body[data-portada] #logo,body[data-portada] #seccion{opacity:0}
+@media (max-width:860px){.portada-cont{max-width:none}.portada-cifra{left:var(--marco);text-align:left}}
+
+
+/* ---------- proyectos agrupados por vertical ---------- */
+.slide.proyv{gap:clamp(8px,1.5vh,22px)}
+/* El titular en dos líneas, no tres: la tercera se la quita a las tarjetas. */
+.slide.proyv .titular{max-width:40ch}
+.grilla-v{flex:1;min-height:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:repeat(3,1fr);
+  gap:clamp(10px,1.3vw,28px)}
+.gv{display:flex;flex-direction:column;gap:clamp(5px,.9vh,13px);min-height:0}
+.gv-cab{display:flex;flex-direction:column;gap:2px;
+  border-top:2px solid var(--c);padding-top:clamp(5px,.9vh,12px)}
+.gv-tot{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);
+  letter-spacing:.1em;color:var(--texto-3)}
+/* Cada tarjeta se reparte el alto de su columna: la vertical con un solo proyecto
+   se lo lleva entero, que es justo lo que pasa con la facturación. */
+.gv-lista{flex:1;min-height:0;display:flex;flex-direction:column;gap:clamp(4px,.75vh,11px)}
+/* Nombre y valor en la misma línea, y el contenido anclado arriba: así la primera línea de
+   cada tarjeta cae a la misma altura en las tres columnas, aunque las cajas midan distinto
+   porque cada vertical tiene otro número de proyectos. */
+.pcard{flex:1;min-height:0;font-family:inherit;color:inherit;text-align:left;cursor:pointer;
+  background:color-mix(in srgb,var(--c) 9%,transparent);
+  border:1px solid color-mix(in srgb,var(--c) 28%,transparent);
+  border-left:3px solid var(--c);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  align-content:start;align-items:baseline;
+  column-gap:clamp(10px,1.1vw,22px);row-gap:clamp(1px,.3vh,5px);
+  padding:clamp(8px,1.3vh,17px) clamp(10px,1.1vw,21px);
+  transition:background .35s var(--ease),transform .35s var(--ease)}
+.pcard .pn{grid-column:1}
+.pcard .pv{grid-column:2;text-align:right;white-space:nowrap}
+.pcard .pl{grid-column:1/-1}
+.pcard:hover{background:color-mix(in srgb,var(--c) 19%,transparent);transform:translateX(4px)}
+.pcard .pn{font-family:var(--display);font-weight:600;letter-spacing:-.02em;line-height:1.1;
+  font-size:clamp(.95rem,min(1.35vw,2.2vh),1.65rem)}
+.pcard .pv{font-family:var(--display);font-weight:800;color:var(--c);
+  font-variant-numeric:tabular-nums;letter-spacing:-.03em;
+  font-size:clamp(1rem,min(1.6vw,2.6vh),2rem)}
+.pcard .pl{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);
+  letter-spacing:.08em;color:var(--texto-3)}
+
+/* El mosaico de campo se lleva la pantalla al tocar un proyecto. */
+.pmosaico{position:absolute;inset:0;z-index:7;background:var(--fondo);
+  opacity:0;visibility:hidden;pointer-events:none;transform:scale(1.015);
+  transition:opacity .5s var(--ease),transform .6s var(--ease),visibility .5s}
+.pmosaico.on{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.pm-fondo{position:absolute;inset:0;display:grid;
+  grid-template-columns:repeat(var(--cols,3),1fr);grid-auto-rows:1fr;gap:2px;background:var(--ink)}
+.pm-fondo i{display:block;overflow:hidden}
+.pm-fondo img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(.28) brightness(.86) contrast(1.05)}
+.pm-velo{position:absolute;inset:0;background:
+  linear-gradient(to right,rgba(18,16,58,.96) 0%,rgba(18,16,58,.82) 36%,rgba(18,16,58,.3) 100%),
+  linear-gradient(to top,rgba(18,16,58,.72) 0%,rgba(18,16,58,.2) 62%)}
+.pm-txt{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;
+  gap:clamp(6px,1.1vh,17px);max-width:48ch;
+  padding:calc(var(--marco) + 38px) var(--marco) calc(var(--marco) + 26px)}
+.pm-txt h3{font-family:var(--display);font-weight:800;letter-spacing:-.035em;line-height:.96;
+  margin:0;font-size:clamp(1.7rem,min(4.6vw,7vh),4.2rem);color:#fff}
+.pm-v{font-family:var(--display);font-weight:800;color:var(--c);letter-spacing:-.035em;
+  font-variant-numeric:tabular-nums;font-size:clamp(1.3rem,min(3vw,4.8vh),2.9rem)}
+.pm-txt p{font-size:clamp(1rem,min(1.4vw,2.2vh),1.7rem);color:rgba(255,255,255,.78);line-height:1.45}
+.pmosaico .chip{align-self:flex-start}
+
+
+/* ---------- pósters de producto · pantalla partida en tres ---------- */
+.slide.posters{padding:0;gap:0;justify-content:stretch}
+.posters-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr;gap:1px;
+  background:var(--borde);position:absolute;inset:0}
+.poster{position:relative;overflow:hidden;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:clamp(12px,1.9vh,26px) clamp(13px,1.35vw,24px) clamp(44px,6.2vh,62px)}
+.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:grayscale(.42) contrast(1.06) brightness(.82);transform:scale(1.05);
+  transition:transform 1.4s var(--ease),filter .6s ease}
+.poster:hover img{transform:scale(1);filter:grayscale(0) brightness(.95)}
+.poster .velo{position:absolute;inset:0;background:linear-gradient(to top,
+  rgba(18,16,58,.97) 6%,rgba(18,16,58,.86) 34%,rgba(18,16,58,.58) 66%,rgba(18,16,58,.4) 100%)}
+.poster .cont{position:relative;display:flex;flex-direction:column;gap:clamp(4px,.68vh,9px)}
+.poster .cat{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.2em;
+  text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px}
+.poster .cat::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
+.poster h3{font-family:var(--display);font-weight:800;letter-spacing:-.04em;line-height:.9;margin:0;
+  font-size:clamp(1.4rem,min(3.1vw,4.9vh),3.5rem);color:#fff;text-transform:uppercase;
+  overflow-wrap:anywhere}
+.poster .claim{font-family:var(--display);font-weight:600;color:var(--c);
+  font-size:clamp(1rem,min(1.65vw,2.65vh),1.95rem);letter-spacing:-.015em}
+.poster .meta{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:rgba(255,255,255,.72);line-height:1.38}
+.poster .ficha{display:flex;gap:clamp(10px,1.2vw,20px);flex-wrap:wrap;padding-top:clamp(5px,.75vh,9px);
+  border-top:1px solid rgba(255,255,255,.2);margin-top:clamp(2px,.35vh,5px)}
+.poster .ficha div{display:flex;flex-direction:column;gap:2px}
+.poster .ficha .k{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.5)}
+.poster .ficha .v{font-family:var(--display);font-weight:700;color:#fff;font-variant-numeric:tabular-nums;
+  font-size:clamp(1rem,min(1.4vw,2.2vh),1.7rem)}
+.posters-eyebrow{position:absolute;top:calc(var(--marco) + 18px);left:var(--marco);z-index:5}
+.posters-eyebrow .eyebrow{color:rgba(255,255,255,.62)}
+.posters-eyebrow .eyebrow::before{background:rgba(255,255,255,.3)}
+
+
+/* ---------- rieles ---------- */
+.riel-sup,.riel-inf{position:fixed;left:var(--marco);right:var(--marco);display:flex;
+  align-items:center;gap:15px;z-index:20;pointer-events:none}
+.riel-sup{top:clamp(15px,2.2vh,28px)} .riel-inf{bottom:clamp(13px,2vh,24px)}
+/* En ventanas bajas —un portátil sin pantalla completa— el marco se come el alto que
+   necesitan las láminas densas. Se aprieta todo para que el contenido siga cabiendo. */
+@media (max-height:780px){
+  :root{--marco:clamp(18px,3vw,38px)}
+  .slide{padding-block:calc(var(--marco) + 26px) calc(var(--marco) + 22px);
+    gap:clamp(8px,1.5vh,18px)}
+  .slide.compacta{padding-block:calc(var(--marco) + 24px) calc(var(--marco) + 19px)}
+  .riel-sup{top:10px} .riel-inf{bottom:9px}
+}
+.riel-sup > *,.riel-inf > *{pointer-events:auto}
+.logo{height:clamp(12px,1.4vw,17px);width:auto;display:block}
+.riel-txt{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.15em;
+  text-transform:uppercase;color:var(--texto-3)}
+.crece{flex:1}
+.seg{display:inline-flex;border:1px solid var(--borde-2);border-radius:999px;overflow:hidden}
+.seg button{background:none;border:0;font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);
+  letter-spacing:.11em;text-transform:uppercase;padding:5px 11px;color:var(--texto-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--texto);color:var(--fondo);font-weight:500}
+.ico{background:none;border:1px solid var(--borde-2);border-radius:999px;width:28px;height:26px;
+  cursor:pointer;color:var(--texto-2);display:grid;place-items:center;padding:0}
+.ico:hover{color:var(--texto);border-color:var(--texto-3)}
+.contador{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.1em;color:var(--texto-3);
+  display:flex;align-items:center;gap:7px}
+.contador i{width:7px;height:7px;border-radius:50%;background:var(--coral);display:block;animation:latido 2.8s var(--ease) infinite}
+.avance{position:fixed;left:0;right:0;bottom:0;height:2px;background:var(--coral);width:0;
+  transition:width .5s var(--ease);z-index:30}
+.zona{position:fixed;top:0;bottom:0;width:13%;z-index:10;cursor:pointer;border:0;background:none}
+.zona.izq{left:0} .zona.der{right:0}
+
+/* ---------- vista general ---------- */
+#general{position:fixed;inset:0;background:color-mix(in srgb,var(--fondo) 97%,transparent);
+  z-index:80;padding:clamp(22px,3.6vh,56px);overflow-y:auto;display:none}
+#general.abierta{display:block}
+#general h2{font-family:var(--display);font-weight:800;font-size:1.4rem;margin:0 0 20px;letter-spacing:-.02em}
+.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px}
+.rejilla button{text-align:left;background:none;border:1px solid var(--borde);color:var(--texto);
+  padding:12px 14px;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:6px;min-height:80px}
+.rejilla button:hover{border-color:var(--texto-3)}
+.rejilla button[aria-current="true"]{border-color:var(--coral)}
+.rejilla .nn{font-family:var(--mono);font-size:.6rem;letter-spacing:.11em;color:var(--texto-3)}
+.rejilla .tt{font-family:var(--display);font-weight:600;font-size:.9rem;line-height:1.18;letter-spacing:-.01em}
+
+@media (max-width:860px){
+  body{overflow:auto}
+  .slide{position:relative;min-height:100svh;overflow:visible}
+  .datos,.cambios,.verticales,.base3,.org-top,.org-areas,.rocas{grid-auto-flow:row}
+  .comp,.detalle,.carrusel{grid-template-columns:1fr}
+  .lista .it,.proy{grid-template-columns:1fr;gap:3px}
+  .zona{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important;transition-delay:0ms!important}
+  .slide.foto img.fondo{transform:none}
+}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+/* Las zonas de clic ocupan toda la altura: un anillo de foco sobre ellas se ve como una
+   línea coral vertical en medio de la lámina. No llevan foco visible. */
+.zona:focus,.zona:focus-visible{outline:none}
+/* En las láminas con botones o tarjetas hasta el borde, las zonas de clic se quedan en el
+   margen: siguen pasando de lámina sin tapar los controles. */
+body[data-controles] .zona{width:calc(var(--marco) - 6px)}
+/* Las cuñas diagonales ocupan la pantalla entera y se recortan con clip-path: un anillo
+   sobre ellas traza el rectángulo completo, no la cuña. El foco se marca en el bloque de texto. */
+.diag-panel:focus-visible{outline:none}
+.diag-panel:focus-visible .diag-cont{outline:2px solid var(--coral);outline-offset:10px}
+
+
+/* ---------- añadidos propios del portafolio ---------- */
+
+/* Encaje: dos columnas de lista sobre la retícula de .cambios. */
+.cambios ul{margin:0;padding:0;list-style:none;display:grid;gap:clamp(5px,.9vh,11px)}
+.cambios li{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2);
+  line-height:1.4;padding-left:clamp(17px,1.5vw,25px);position:relative}
+.cambios li::before{content:'';position:absolute;left:0;top:.52em;
+  width:clamp(7px,.65vw,10px);height:clamp(7px,.65vw,10px);border-radius:50%;
+  background:var(--c,var(--coral))}
+.cambios .nn{color:var(--c,var(--coral))}
+
+
+
+/* ════════════════════════════════════════════════════════════
+   3 · COMPONENTES PROPIOS DEL PORTAFOLIO
+   Todo lo de aquí abajo es nuevo respecto al deck de la junta.
+   ════════════════════════════════════════════════════════════ */
+
+/* ---------- enlaces de referencia ----------
+   Cada afirmación externa —premio, prensa, alianza— cuelga de un enlace. Se marcan con
+   flecha para que se lean como salida del documento, y abren en pestaña nueva. */
+.enlace{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.1rem);
+  letter-spacing:.09em;color:var(--dato);text-decoration:none;
+  display:inline-flex;align-items:baseline;gap:7px;
+  border-bottom:1px solid color-mix(in srgb,var(--dato) 34%,transparent);
+  padding-bottom:1px;transition:border-color .25s,color .25s;max-width:100%}
+.enlace span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.enlace::after{content:'\2197';flex:none;font-size:.92em}
+.enlace:hover{color:var(--texto);border-bottom-color:var(--texto)}
+/* Sobre foto oscura el azul del token pierde contraste: allí el enlace va en blanco. */
+.sobre-foto .enlace{color:rgba(255,255,255,.88);
+  border-bottom-color:rgba(255,255,255,.35)}
+.sobre-foto .enlace:hover{color:#fff;border-bottom-color:#fff}
+
+/* Marca de dato sin soporte documental. Existe para que nadie presente como cerrado algo
+   que todavía no lo está: si se ve en pantalla, es que falta el enlace. */
+/* `flex` de bloque, no `inline-flex`. Siendo inline, el alto intrínseco de la nota se
+   calculaba sobre el texto sin envolver —una línea— así que la tarjeta que la contiene se
+   dimensionaba corta y el texto, ya envuelto en dos líneas, se salía por abajo y pisaba la
+   tarjeta siguiente. El punto se alinea a la primera línea, no al centro del bloque. */
+.pendiente{font-family:var(--mono);font-size:clamp(.68rem,min(.88vw,1.4vh),1rem);
+  letter-spacing:.13em;text-transform:uppercase;color:var(--amarillo);line-height:1.4;
+  display:flex;align-items:flex-start;gap:7px;width:100%}
+.pendiente::before{content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--amarillo);flex:none;margin-top:.45em}
+
+
+/* ---------- indicadores ----------
+   Cuatro cifras grandes separadas por filetes de 1px, al modo de los KPI del deck de la
+   junta. La unidad va debajo del número, no al lado: a este cuerpo compiten por el ojo. */
+.indicadores{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:1px;
+  background:var(--borde);border:1px solid var(--borde)}
+.indicadores > div{background:var(--fondo);
+  padding:clamp(16px,2.8vh,38px) clamp(14px,1.6vw,28px);
+  display:flex;flex-direction:column;gap:clamp(3px,.6vh,8px)}
+.indicadores .n{font-family:var(--display);font-weight:800;letter-spacing:-.045em;
+  line-height:.88;font-variant-numeric:tabular-nums;color:var(--coral);
+  font-size:clamp(2.1rem,min(5.4vw,8vh),4.8rem)}
+.indicadores .u{font-family:var(--display);font-weight:600;letter-spacing:-.02em;
+  font-size:clamp(1rem,min(1.6vw,2.6vh),1.8rem);line-height:1.05}
+.indicadores .d{font-size:clamp(.82rem,min(1.05vw,1.7vh),1.2rem);color:var(--texto-3);
+  line-height:1.35;padding-top:clamp(4px,.7vh,9px);border-top:1px solid var(--borde);
+  margin-top:clamp(4px,.7vh,9px)}
+
+
+/* ---------- mapa de países ----------
+   A pantalla completa: el lienzo de puntos ocupa la lámina y el título va encima, arriba a la
+   izquierda, sobre el mar; la animación dibuja el croquis a la derecha. */
+.slide.mapa-full{justify-content:space-between}
+.mapa-lienzo{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mapa-cab,.slide.mapa-full .pie-dato{position:relative;max-width:min(38%,560px)}
+@media (max-width:860px){.mapa-cab,.slide.mapa-full .pie-dato{max-width:none}}
+/* Línea del tiempo: el año que corre en grande y, debajo, los años con llegada como hitos en
+   fila; los nombres de los países ya están en el mapa. Se marcan al ritmo del mapa. */
+.mapa-tiempo{margin-top:clamp(14px,3vh,40px);display:flex;flex-direction:column;gap:clamp(8px,1.6vh,20px)}
+.mapa-anio{font-family:var(--display);font-weight:800;letter-spacing:-.05em;line-height:.85;
+  font-size:clamp(3rem,min(8vw,13vh),9rem);color:var(--coral);font-variant-numeric:tabular-nums}
+.mapa-hitos{list-style:none;margin:0;padding:0;display:flex;gap:clamp(14px,1.8vw,30px);
+  border-top:1px solid var(--borde);padding-top:14px}
+.mapa-hitos li{display:flex;align-items:baseline;gap:10px;position:relative;color:var(--texto-3);
+  font-family:var(--mono);font-size:clamp(.66rem,min(.84vw,1.35vh),.95rem);letter-spacing:.08em;
+  transition:color .4s var(--ease)}
+.mapa-hitos li:not(.hito){display:none}
+.mapa-hitos li i{position:absolute;left:0;top:-18.5px;width:8px;height:8px;border-radius:50%;
+  background:var(--fondo);box-shadow:inset 0 0 0 1.5px var(--borde-2);transition:background .4s,box-shadow .4s}
+.mapa-hitos li small{font-family:var(--display);font-weight:600;font-size:1.25em;letter-spacing:-.01em;
+  color:inherit}
+.mapa-hitos li.on{color:var(--texto)}
+.mapa-hitos li.on span{color:var(--coral)}
+.mapa-hitos li.on i{background:var(--coral);box-shadow:none}
+
+
+/* ---------- sellos oficiales ----------
+   La insignia que emite cada programa va tal cual: son piezas de marca de un tercero, así
+   que nada de recolorear, invertir ni recortar. Las dos vienen pensadas para fondo claro
+   —la de Canva es una placa blanca, la de Microsoft un escudo morado— y se sostienen
+   igual sobre el fondo oscuro del deck, así que no llevan plaquita detrás. El tinte de la
+   tarjeta es el color de la marca aliada. */
+.sellos{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.6vw,30px);
+  flex:none;align-content:center}
+.sello{display:flex;flex-direction:column;gap:clamp(9px,1.5vh,20px);min-height:0;
+  border:1px solid color-mix(in srgb,var(--c) 42%,transparent);
+  background:color-mix(in srgb,var(--c) 10%,transparent);
+  padding:clamp(16px,2.6vh,36px) clamp(16px,1.9vw,34px)}
+.sello .insignia{display:flex;align-items:center;gap:clamp(13px,1.6vw,28px);
+  padding-bottom:clamp(9px,1.4vh,18px);
+  border-bottom:1px solid color-mix(in srgb,var(--c) 32%,transparent)}
+/* La insignia es lo que la lámina viene a enseñar, así que va grande: por debajo de unos
+   cien píxeles su propia tipografía —«Global Training Partner», «for Education Partner»—
+   deja de leerse y el sello se convierte en un adorno. El renglón de rango que había aquí
+   se quitó: decía exactamente lo que ya dice la insignia. */
+.sello .placa{width:clamp(96px,11vw,152px);height:auto;flex:none;display:block}
+.sello .quien{display:flex;flex-direction:column;gap:clamp(4px,.7vh,10px);min-width:0}
+.sello h3{font-family:var(--display);font-weight:800;letter-spacing:-.032em;line-height:1.02;
+  margin:0;font-size:clamp(1.15rem,min(2.2vw,3.5vh),2rem);text-wrap:balance}
+/* En gris y no en el color de la marca: aclarar un morado oscuro para que se lea sobre el
+   fondo del deck da un tono sucio, y además este renglón es información secundaria en todas
+   las demás láminas. */
+.sello .region{font-family:var(--mono);font-size:clamp(.7rem,min(.9vw,1.45vh),1.05rem);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--texto-3)}
+.sello p{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2);
+  line-height:1.44;max-width:40ch}
+.sello .pie{margin-top:auto;padding-top:clamp(8px,1.3vh,16px);
+  display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+
+
+/* ---------- premios y reconocimientos ----------
+   Retícula de tarjetas: el año en grande hace de ancla y el otorgante manda sobre el
+   nombre del premio, porque es lo que da peso a la afirmación. */
+/* `flex:none` —ni crece ni encoge— para que la rejilla mida exactamente lo que mide su
+   contenido. Con cualquier valor encogible la lámina le imponía un alto y el navegador
+   repartía ese alto entre las filas a partes iguales; las tarjetas con una línea de más se
+   salían por abajo y pisaban la fila siguiente. Aquí cada fila mide lo que pide su tarjeta
+   más alta, y la lámina centra el bloque entero. */
+/* La pista mínima es angosta a propósito: con una más ancha caben tres columnas y los cuatro
+   premios de la versión larga se parten en dos filas —tres arriba y uno suelto abajo—, y el
+   bloque entero deja de caber en la lámina. Así entran cuatro por fila. */
+.premios{display:grid;gap:clamp(10px,1.3vw,24px);flex:none;
+  grid-template-columns:repeat(auto-fit,minmax(clamp(190px,20vw,300px),1fr))}
+/* Sin `overflow:hidden` a propósito. Recortar parecía prudente, pero esconde el fallo dos
+   veces: no se ve en pantalla que falta texto, y revisar.mjs deja de poder detectarlo porque
+   no mira dentro de las cajas que recortan. Si alguna vez una tarjeta no cabe, que se note. */
+.premio{display:flex;flex-direction:column;gap:clamp(6px,1vh,13px);min-height:0;
+  border:1px solid var(--borde);border-top:3px solid var(--c,var(--coral));
+  padding:clamp(13px,2.1vh,28px) clamp(13px,1.5vw,26px);
+  transition:background .35s var(--ease)}
+.premio:hover{background:color-mix(in srgb,var(--texto) 4%,transparent)}
+.premio .anio{font-family:var(--display);font-weight:800;letter-spacing:-.04em;line-height:.88;
+  font-variant-numeric:tabular-nums;color:var(--c,var(--coral));
+  font-size:clamp(1.6rem,min(3.4vw,5.2vh),3rem)}
+.premio h3{font-family:var(--display);font-weight:700;letter-spacing:-.026em;line-height:1.04;
+  margin:0;font-size:clamp(1.05rem,min(1.85vw,3vh),1.85rem)}
+.premio .otorga{font-family:var(--mono);font-size:clamp(.7rem,min(.9vw,1.45vh),1.05rem);
+  letter-spacing:.11em;text-transform:uppercase;color:var(--texto-3);line-height:1.4}
+.premio .cat{font-size:clamp(.82rem,min(1.05vw,1.7vh),1.2rem);color:var(--texto-2);
+  line-height:1.4}
+.premio p{font-size:clamp(.85rem,min(1.1vw,1.78vh),1.28rem);color:var(--texto-2);line-height:1.44}
+.premio .pie{margin-top:auto;padding-top:clamp(7px,1.1vh,14px);
+  border-top:1px solid var(--borde);display:flex;flex-direction:column;gap:6px;
+  align-items:flex-start}
+/* Premio con logo: la placa lleva el logo oficial sobre el fondo con el que lo publica quien
+   lo otorga, fijo en los dos temas porque varios logos solo existen en blanco. Los recortes
+   de banner (.recorte) van a sangre sobre su mismo color de fondo; los logos limpios llevan
+   aire alrededor. El logo va en absoluto para que la proporción de la placa no dependa de la
+   del archivo: así las cuatro tarjetas alinean el año a la misma altura. */
+.premio.con-logo .placa{position:relative;aspect-ratio:16/9;background:var(--p);
+  margin-bottom:clamp(4px,.8vh,10px)}
+.premio.con-logo .placa img{position:absolute;inset:clamp(12px,1.6vw,26px);
+  width:calc(100% - 2 * clamp(12px,1.6vw,26px));height:calc(100% - 2 * clamp(12px,1.6vw,26px));
+  object-fit:contain;display:block}
+.premio.con-logo .placa.recorte img{inset:0;width:100%;height:100%}
+.premio .premiado{font-size:clamp(.9rem,min(1.2vw,1.9vh),1.35rem);color:var(--texto-2);
+  line-height:1.3}
+.premio .premiado::before{content:'Premió · ';font-family:var(--mono);font-size:.72em;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--texto-3)}
+
+
+/* ---------- retrato del CEO con sus reconocimientos ---------- */
+/* Retrato, ficha y reconocimientos en tres columnas. El retrato va entero, sin recortar la
+   cara: se ajusta al alto disponible y su ancho sale de la proporción de la foto. */
+.ceo-caja{flex:1;min-height:0;display:grid;
+  grid-template-columns:auto minmax(0,.8fr) minmax(0,1.2fr);grid-template-rows:minmax(0,1fr);
+  gap:clamp(20px,3vw,54px);align-items:center}
+.ceo-retrato{height:min(100%,62vh);aspect-ratio:3/4;overflow:hidden;border-bottom:3px solid var(--coral)}
+.ceo-retrato img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
+.ceo-ficha{display:flex;flex-direction:column;gap:clamp(8px,1.4vh,18px);min-width:0}
+.ceo-ficha .n{font-family:var(--display);font-weight:800;letter-spacing:-.036em;line-height:.96;
+  font-size:clamp(1.7rem,min(3.8vw,6vh),3.4rem)}
+.ceo-ficha .cargo{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.1rem);
+  letter-spacing:.14em;text-transform:uppercase;color:var(--coral)}
+.ceo-ficha p{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);color:var(--texto-2);
+  line-height:1.46;max-width:36ch}
+.recos{display:grid;border-top:1px solid var(--borde);align-content:center;min-width:0}
+.reco{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.8vw,34px);
+  padding:clamp(8px,1.4vh,18px) 0;border-bottom:1px solid var(--borde);align-items:baseline}
+.reco .anio{font-family:var(--mono);font-size:clamp(.78rem,min(1vw,1.6vh),1.15rem);
+  letter-spacing:.1em;color:var(--coral);font-variant-numeric:tabular-nums}
+.reco .cuerpo{display:flex;flex-direction:column;gap:5px;min-width:0}
+/* El enlace largo puede partirse: si no, ensancha la fila y se sale del marco. */
+.reco .enlace{white-space:normal;max-width:100%}
+.reco h3{font-family:var(--display);font-weight:700;letter-spacing:-.024em;line-height:1.06;
+  margin:0;font-size:clamp(1rem,min(1.65vw,2.7vh),1.7rem)}
+.reco .otorga{font-family:var(--mono);font-size:clamp(.7rem,min(.9vw,1.45vh),1.05rem);
+  letter-spacing:.11em;text-transform:uppercase;color:var(--texto-3)}
+.reco p{font-size:clamp(.82rem,min(1.05vw,1.7vh),1.2rem);color:var(--texto-2);line-height:1.42;
+  max-width:62ch}
+
+
+/* ---------- ficha de proyecto ----------
+   Media lámina de foto a sangre y media de texto. El propósito, el cómo y el impacto van
+   etiquetados como en el portafolio anterior: es la estructura que ya reconocen los
+   clientes que lo han recibido. */
+.slide.ficha{padding:0;gap:0}
+.ficha-caja{position:absolute;inset:0;display:grid;grid-template-columns:1.05fr 1fr}
+.ficha-foto{position:relative;overflow:hidden;background:var(--ink)}
+/* Velo: funde el carrusel con el texto a la derecha y oscurece arriba y abajo, donde pasan
+   el logo y el pie del riel fijo, para que se lean sobre las fotos en movimiento. */
+.ficha-foto .velo{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(18,16,58,.78),transparent 16%,transparent 84%,rgba(18,16,58,.78)),
+    linear-gradient(to right,rgba(18,16,58,.28),rgba(18,16,58,.05) 45%,var(--fondo) 99.5%)}
+/* Carrusel de tres franjas: cada franja es una pista con sus fotos dos veces seguidas, que se
+   desplaza media altura en loop. Cada foto mide un tercio del alto: se ven tres por franja. */
+.carriles{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.carril{position:relative;overflow:hidden;min-height:0;container-type:size}
+.carril .pista{display:flex;flex-direction:column;gap:3px;
+  animation:sube var(--t,26s) linear infinite}
+.carril.baja .pista{animation-name:baja}
+.carril i{display:block;flex:0 0 calc((100cqh - 6px) / 3);overflow:hidden}
+.carril img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(.2) contrast(1.05) brightness(.92)}
+@keyframes sube{from{transform:translateY(0)}to{transform:translateY(calc(-50% - 1.5px))}}
+@keyframes baja{from{transform:translateY(calc(-50% - 1.5px))}to{transform:translateY(0)}}
+/* Solo se mueve la ficha en pantalla: las demás quedan quietas y no gastan. */
+.slide:not(.viva) .carril .pista{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.carril .pista{animation:none}}
+/* Ficha sin foto. No todos los proyectos tienen registro fotográfico, y antes que pedirle
+   prestada una foto al proyecto de al lado —que sería rotularla como algo que no es— el
+   panel se vuelve cartel: el dato de impacto en grande sobre el color de la vertical, con
+   una retícula tenue detrás para que no quede un plano muerto. */
+.ficha-cartel{position:relative;display:flex;flex-direction:column;justify-content:center;
+  gap:clamp(9px,1.6vh,24px);overflow:hidden;
+  padding:calc(var(--marco) + 40px) clamp(20px,2.6vw,52px) calc(var(--marco) + 30px) var(--marco);
+  background:color-mix(in srgb,var(--c) 15%,var(--ink));
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:clamp(34px,4vw,58px) clamp(34px,4vw,58px)}
+.ficha-cartel .marca-v{font-size:clamp(1.2rem,min(2.4vw,3.8vh),2.1rem)}
+.ficha-cartel .cifra{font-family:var(--display);font-weight:800;letter-spacing:-.045em;
+  line-height:.92;color:#fff;text-wrap:balance;
+  font-size:clamp(1.8rem,min(4.4vw,7vh),4.2rem)}
+.ficha-cartel .k{font-family:var(--mono);font-size:clamp(.7rem,min(.9vw,1.45vh),1.05rem);
+  letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.58)}
+.ficha-cartel .regla{height:4px;width:clamp(56px,7vw,104px);background:var(--c);
+  border-radius:2px}
+
+.ficha-txt{display:flex;flex-direction:column;justify-content:center;
+  gap:clamp(9px,1.5vh,22px);min-height:0;overflow:hidden;
+  padding:calc(var(--marco) + 40px) var(--marco) calc(var(--marco) + 30px) clamp(20px,2.6vw,52px)}
+.ficha-txt h2{font-family:var(--display);font-weight:800;letter-spacing:-.04em;line-height:.94;
+  margin:0;font-size:clamp(1.6rem,min(3.9vw,6.2vh),3.6rem);text-wrap:balance}
+.ficha-meta{display:flex;flex-wrap:wrap;gap:clamp(8px,1vw,18px);align-items:center;
+  font-family:var(--mono);font-size:clamp(.7rem,min(.9vw,1.45vh),1.05rem);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--texto-3)}
+.ficha-meta .sep{width:3px;height:3px;border-radius:50%;background:var(--texto-3)}
+.ficha-campos{display:grid;gap:clamp(7px,1.15vh,15px);border-top:1px solid var(--borde);
+  padding-top:clamp(8px,1.3vh,17px)}
+.ficha-campos > div{display:grid;grid-template-columns:clamp(74px,7.4vw,112px) 1fr;
+  gap:clamp(10px,1.2vw,22px);align-items:baseline}
+.ficha-campos .k{font-family:var(--mono);font-size:clamp(.68rem,min(.88vw,1.4vh),1rem);
+  letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--coral))}
+.ficha-campos .v{font-size:clamp(.85rem,min(1.12vw,1.8vh),1.3rem);color:var(--texto-2);
+  line-height:1.44}
+.ficha-impacto{display:flex;flex-direction:column;gap:4px;
+  border-left:3px solid var(--c,var(--coral));padding-left:clamp(12px,1.3vw,22px)}
+.ficha-impacto .k{font-family:var(--mono);font-size:clamp(.68rem,min(.88vw,1.4vh),1rem);
+  letter-spacing:.15em;text-transform:uppercase;color:var(--texto-3)}
+.ficha-impacto .v{font-family:var(--display);font-weight:700;letter-spacing:-.026em;
+  line-height:1.08;font-size:clamp(1.05rem,min(1.9vw,3vh),1.9rem)}
+.ficha-links{display:flex;flex-wrap:wrap;gap:clamp(8px,1vw,18px)}
+
+
+/* ---------- en los medios ----------
+   Lista, no rejilla de logos: el titular es lo que sostiene la afirmación, y un muro de
+   logos de medios obligaría a usar material de marca de terceros. */
+/* Botón para ir de una lámina a otra (abanico ↔ anexo de prensa). */
+.ver-todas{display:inline-flex;align-items:center;gap:10px;cursor:pointer;background:none;
+  color:var(--texto);border:1.5px solid var(--coral);border-radius:999px;
+  padding:clamp(7px,1vh,11px) clamp(14px,1.3vw,20px);font-family:var(--display);font-weight:600;
+  letter-spacing:-.01em;font-size:clamp(.85rem,min(1.1vw,1.8vh),1.2rem);
+  transition:background .3s var(--ease),color .3s var(--ease)}
+.ver-todas .cn{font-family:var(--mono);font-weight:400;font-size:.78em;color:var(--texto-3)}
+.ver-todas:hover{background:var(--coral);color:var(--ink)}
+.ver-todas:hover .cn{color:rgba(18,16,58,.6)}
+
+/* Anexo de prensa: una nota por línea —el titular largo se corta con puntos suspensivos y se
+   lee entero al pasar el cursor—. Si en una ventana baja no cabe, se desplaza. */
+.tabla-prensa{flex:1;min-height:0;overflow-y:auto;border-top:1px solid var(--borde)}
+.tabla-prensa table{width:100%;border-collapse:collapse;table-layout:fixed}
+.tabla-prensa th:nth-child(1){width:4.5em}.tabla-prensa th:nth-child(2){width:24%}
+.tabla-prensa th:nth-child(3){width:14%}.tabla-prensa th:nth-child(5){width:10em}
+.tabla-prensa th{position:sticky;top:0;background:var(--fondo);text-align:left;font-weight:400;
+  font-family:var(--mono);font-size:clamp(.62rem,min(.8vw,1.3vh),.9rem);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--texto-3);padding:clamp(5px,.8vh,9px) 12px clamp(5px,.8vh,9px) 0}
+.tabla-prensa td{padding:clamp(0px,.16vh,4px) 12px clamp(0px,.16vh,4px) 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--borde);
+  vertical-align:baseline;font-size:clamp(.72rem,min(.92vw,1.46vh),1.05rem);line-height:1.22}
+.tabla-prensa .anio{font-family:var(--mono);color:var(--coral);white-space:nowrap}
+.tabla-prensa .mm{font-family:var(--display);font-weight:700;letter-spacing:-.015em;white-space:nowrap}
+.tabla-prensa .pais{font-family:var(--mono);font-size:.74em;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-3)}
+.tabla-prensa .tit{color:var(--texto-2)}
+.tabla-prensa .lk{white-space:nowrap;text-align:right;padding-right:0}
+.tabla-prensa tr.sin-link .mm,.tabla-prensa tr.sin-link .tit{color:var(--texto-3)}
+
+/* ---------- abanico de recortes de prensa ----------
+   Tarjetas de papel cuadradas —las capturas son casi todas cuadradas o apaisadas— con la captura entera dentro —contain, sobre blanco: es
+   pieza de un tercero y no se recorta—. Se reparten a lo ancho con container queries: el ancho
+   de cada tarjeta sale del alto del abanico. La activa se endereza, crece y se pone al frente. */
+.abanico{position:relative;flex:1;min-height:0;container-type:size;margin-top:clamp(4px,1vh,14px)}
+.hoja{position:absolute;top:50%;height:82cqh;aspect-ratio:1/1;padding:0;border:0;cursor:pointer;
+  left:calc(5cqh + (100cqw - 92cqh) * var(--i) / max(1, var(--n) - 1));z-index:var(--z,1);
+  background:#F3EDE2;border-radius:4px;display:flex;flex-direction:column;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  transform:translateY(-50%) rotate(var(--rot,0deg)) scale(.94);
+  transition:transform .7s var(--ease),box-shadow .7s var(--ease),filter .7s var(--ease);
+  filter:brightness(.72) saturate(.85)}
+.hoja .papel{flex:1;min-height:0;padding:5%;display:flex;align-items:center;justify-content:center}
+/* La captura se imprime sobre el papel: con multiplicar, su fondo blanco toma el beige. */
+.hoja .papel img{max-width:100%;max-height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.hoja .sello{font-family:var(--mono);font-size:clamp(.6rem,1.6cqh,.9rem);letter-spacing:.12em;
+  text-transform:uppercase;color:#12103A;padding:0 7% 6%;text-align:left}
+.hoja.activa{transform:translateY(-52%) rotate(0deg) scale(1.08);filter:none;
+  box-shadow:0 28px 70px rgba(0,0,0,.55),0 8px 18px rgba(0,0,0,.3)}
+.hoja:not(.activa):hover{filter:brightness(.9)}
+.hoja:focus-visible{outline:3px solid var(--coral);outline-offset:4px}
+/* Pie: la nota activa, con su medio, fecha, titular y enlace. Todas ocupan la misma celda. */
+.abanico-notas{display:grid;min-height:clamp(52px,8vh,84px);border-top:1px solid var(--borde);
+  padding-top:clamp(8px,1.3vh,16px)}
+.abanico-nota{grid-area:1/1;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;
+  opacity:0;transform:translateY(-6px);pointer-events:none;
+  transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.abanico-nota.on{opacity:1;transform:none;pointer-events:auto}
+.abanico-nota .mm{font-family:var(--display);font-weight:800;letter-spacing:-.02em;
+  font-size:clamp(1.05rem,min(1.5vw,2.4vh),1.6rem);color:var(--coral)}
+.abanico-nota .fecha{font-family:var(--mono);font-size:clamp(.64rem,min(.82vw,1.3vh),.95rem);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--texto-3)}
+.abanico-nota .tit{flex-basis:100%;font-size:clamp(.92rem,min(1.2vw,1.95vh),1.35rem);line-height:1.3}
+
+
+/* ---------- cierre y contacto ---------- */
+.contacto{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:1px;
+  background:var(--borde);border:1px solid var(--borde)}
+.contacto > div{background:var(--fondo);display:flex;flex-direction:column;gap:6px;
+  padding:clamp(14px,2.2vh,30px) clamp(13px,1.5vw,26px)}
+.contacto .k{font-family:var(--mono);font-size:clamp(.68rem,min(.88vw,1.4vh),1rem);
+  letter-spacing:.15em;text-transform:uppercase;color:var(--texto-3)}
+.contacto .v{font-size:clamp(.88rem,min(1.15vw,1.85vh),1.35rem);line-height:1.38;
+  overflow-wrap:anywhere}
+
+
+/* ---------- ajustes de pantalla angosta para lo nuevo ---------- */
+@media (max-width:860px){
+  .indicadores,.contacto{grid-auto-flow:row}
+  .sellos,.premios{grid-template-columns:1fr}
+  .mapa-caja,.ceo-caja{grid-template-columns:1fr}
+  .ceo-retrato{height:auto;width:min(60vw,260px)}
+  .ficha-caja{grid-template-columns:1fr;grid-template-rows:38vh 1fr}
+  .ficha-txt{padding:clamp(18px,4vw,30px)}
+  .medio,.ficha-campos > div,.reco{grid-template-columns:1fr;gap:4px}
+}
+
+/* ---------- proyectos insignia (solo versión corta) ----------
+   En el deck de la junta las tarjetas se estiraban a lo alto de su columna a propósito: el
+   alto decía cuánto facturaba esa vertical. Aquí no dice nada, y una vertical con un solo
+   proyecto quedaba con una tarjeta de trescientos píxeles y dos líneas de texto dentro. */
+.slide.proyv .gv-lista{flex:0 1 auto}
+.slide.proyv .pcard{flex:0 0 auto}
+
+
+/* ---------- desarrollos propios ----------
+   Tres tarjetas, una por vertical: foto arriba y el resultado en grande en el color de la
+   vertical. La herramienta va al pie, en pequeño: lo que se vende es el resultado. */
+/* Foto y texto comparten filas entre tarjetas (subgrid): las tres fotos miden lo mismo
+   aunque un texto sea más largo que otro. */
+.desarrollos{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:minmax(0,1fr) auto;column-gap:clamp(12px,1.6vw,30px)}
+.desarrollo{display:grid;grid-row:span 2;grid-template-rows:subgrid;min-height:0;
+  border:1px solid var(--borde);border-top:3px solid var(--c)}
+.desarrollo .foto{min-height:clamp(60px,12vh,160px);overflow:hidden}
+.desarrollo .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.desarrollo .cuerpo{display:flex;flex-direction:column;gap:clamp(4px,.7vh,9px);
+  padding:clamp(12px,1.8vh,24px) clamp(13px,1.4vw,24px)}
+.desarrollo .cat{font-family:var(--mono);font-size:clamp(.68rem,min(.88vw,1.4vh),1rem);
+  letter-spacing:.14em;text-transform:uppercase;color:var(--texto-3)}
+.desarrollo .cifra{font-family:var(--display);font-weight:800;letter-spacing:-.04em;line-height:.92;
+  color:var(--c);font-size:clamp(1.8rem,min(3.8vw,6vh),3.6rem)}
+.desarrollo .que{font-family:var(--display);font-weight:600;letter-spacing:-.015em;line-height:1.15;
+  font-size:clamp(.98rem,min(1.4vw,2.25vh),1.55rem)}
+.desarrollo p{font-size:clamp(.82rem,min(1.05vw,1.7vh),1.2rem);color:var(--texto-2);line-height:1.42}
+.desarrollo .con{font-family:var(--mono);font-size:clamp(.66rem,min(.85vw,1.35vh),.98rem);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--texto-3);
+  padding-top:clamp(6px,1vh,12px);border-top:1px solid var(--borde)}
+@media (max-width:860px){.desarrollos{grid-template-columns:1fr;grid-template-rows:none}
+  .desarrollo{grid-row:auto;grid-template-rows:180px auto}}
+
+
+/* ---------- portafolio de proyectos ----------
+   Grilla de todos los proyectos con tres selectores de vertical arriba. Ocho columnas o más
+   (--cols, para no pasar de cuatro filas); el alto
+   de fila sale de cuántos proyectos hay (--filas) y no cambia al filtrar: lo que queda sube y
+   la grilla no se estira. */
+.port-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.port-cab .titular{margin:0}
+/* Los selectores van centrados: en el borde derecho quedaban bajo la zona de clic que pasa
+   de lámina, y es donde menos se esperan. */
+.port-filtros{display:flex;justify-content:center}
+.filtros{display:flex;gap:clamp(6px,.7vw,12px);flex-wrap:wrap;justify-content:center}
+.filtros button{display:flex;align-items:center;gap:9px;cursor:pointer;
+  font-family:var(--display);font-weight:600;letter-spacing:-.01em;color:var(--texto);
+  font-size:clamp(.85rem,min(1.1vw,1.8vh),1.2rem);background:none;
+  border:1px solid var(--borde-2);border-radius:999px;padding:clamp(6px,.9vh,10px) clamp(12px,1.2vw,18px);
+  transition:background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease)}
+.filtros button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.filtros button .cn{font-family:var(--mono);font-weight:400;font-size:.78em;color:var(--texto-3)}
+.filtros button:hover{border-color:var(--c)}
+.filtros button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--ink)}
+.filtros button[aria-pressed="true"] i{background:var(--ink)}
+.filtros button[aria-pressed="true"] .cn{color:rgba(18,16,58,.6)}
+
+.grilla-proy{--gap:clamp(6px,.7vw,12px);flex:1;min-height:0;display:grid;
+  grid-template-columns:repeat(var(--cols,8),minmax(0,1fr));margin-top:clamp(6px,1.4vh,18px);
+  grid-auto-rows:calc((100% - (var(--filas,3) - 1) * var(--gap)) / var(--filas,3));
+  gap:var(--gap);align-content:start}
+.grilla-proy[data-filtro="studio"] .pc:not([data-v="studio"]),
+.grilla-proy[data-filtro="academy"] .pc:not([data-v="academy"]),
+.grilla-proy[data-filtro="lab"] .pc:not([data-v="lab"]){display:none}
+.pc{position:relative;overflow:hidden;display:flex;align-items:flex-end;text-align:left;
+  padding:0;border:0;border-bottom:3px solid var(--c);background:var(--ink);color:#fff;font:inherit}
+button.pc{cursor:pointer}
+.pc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .6s var(--ease)}
+.pc .velo{position:absolute;inset:0;background:linear-gradient(to top,rgba(18,16,58,.92),rgba(18,16,58,.15) 70%)}
+/* Sin foto, la tarjeta va de cartel en el color de la vertical, como la ficha sin foto. */
+.pc.cartel{background:color-mix(in srgb,var(--c) 22%,var(--ink))}
+.pc.cartel .velo{background:none}
+.pc .txt{position:relative;display:flex;flex-direction:column;gap:2px;
+  padding:clamp(8px,1vh,14px) clamp(9px,.9vw,14px)}
+.pc .cat{font-family:var(--mono);font-size:clamp(.58rem,min(.72vw,1.15vh),.85rem);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--c)}
+.pc .nom{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.08;
+  font-size:clamp(.82rem,min(1.1vw,1.8vh),1.25rem)}
+.pc .meta{font-size:clamp(.62rem,min(.78vw,1.25vh),.9rem);color:rgba(255,255,255,.62)}
+button.pc:hover img{transform:scale(1.05)}
+button.pc:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+
+/* Regreso desde una ficha a la grilla: botón visible, con el borde en el color de la vertical.
+   Va sobre la ficha y encima de la zona de clic derecha, que si no se lo tragaba. */
+.ficha-txt .volver{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;
+  position:relative;z-index:11;cursor:pointer;background:none;color:var(--texto);
+  border:1.5px solid var(--c);border-radius:999px;padding:clamp(7px,1vh,11px) clamp(14px,1.3vw,20px);
+  font-family:var(--display);font-weight:600;letter-spacing:-.01em;
+  font-size:clamp(.85rem,min(1.1vw,1.8vh),1.2rem);margin-bottom:clamp(10px,2vh,24px);
+  transition:background .3s var(--ease),color .3s var(--ease)}
+.ficha-txt .volver .flecha{font-size:1.15em;line-height:1;transition:transform .3s var(--ease)}
+.ficha-txt .volver:hover{background:var(--c);color:var(--ink)}
+.ficha-txt .volver:hover .flecha{transform:translateX(-3px)}
+.ficha-txt .volver:focus-visible{outline:2px solid var(--c);outline-offset:3px}
+
+@media (max-width:860px){.grilla-proy{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:140px}}
