@@ -2,6 +2,25 @@
 <html lang="es" data-theme="dark">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+  // Celular acostado: la página se dibuja como una pantalla de escritorio de 640 px de alto
+  // (el ancho sale de la proporción de la pantalla) y el navegador la reduce para llenarla. Así
+  // se ve el mismo diseño que en un computador, sin láminas apiladas. En vertical se pide girar el
+  // celular (#girar en portafolio.css) y se vuelve al ancho del dispositivo.
+  (function () {
+    var vp = document.querySelector('meta[name="viewport"]');
+    function ajusta() {
+      var largo = Math.max(screen.width, screen.height), corto = Math.min(screen.width, screen.height);
+      var acostado = (screen.orientation ? screen.orientation.type.indexOf('landscape') === 0 : innerWidth > innerHeight);
+      vp.setAttribute('content', acostado && corto < 600
+        ? 'width=' + Math.round(640 * largo / corto) + ',user-scalable=no'
+        : 'width=device-width,initial-scale=1');
+    }
+    ajusta();
+    if (screen.orientation) screen.orientation.addEventListener('change', ajusta);
+    addEventListener('orientationchange', function () { setTimeout(ajusta, 60); });
+  })();
+</script>
 <title>Critertec · Portafolio 2026</title>
 <meta name="description" content="Portafolio 2026 de Critertec Educación: estudio creativo de proyectos educativos en Latinoamérica. Proyectos, premios, alianzas oficiales y prensa.">
 
@@ -36,6 +55,15 @@
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
          stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
   </button>
+</div>
+
+<!-- En un celular en vertical la presentación no se lee bien: se pide girarlo. Solo lo muestra el
+     CSS (#girar) en vertical y en pantallas angostas; al voltear el celular desaparece solo. -->
+<div id="girar" role="status">
+  <img class="girar-logo" src="assets/logo/02-blanco-punto-coral.png" alt="Critertec">
+  <div class="girar-tel" aria-hidden="true"><i></i></div>
+  <p class="girar-tit">Gira tu celular<span class="punto">.</span></p>
+  <p class="girar-sub">El portafolio se ve en horizontal.</p>
 </div>
 
 <div id="deck"></div>

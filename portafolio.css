@@ -935,3 +935,40 @@ button.pc:focus-visible{outline:2px solid var(--c);outline-offset:2px}
 .ficha-txt .volver:focus-visible{outline:2px solid var(--c);outline-offset:3px}
 
 @media (max-width:860px){.grilla-proy{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:140px}}
+
+
+/* ---------- celular en vertical: pedir que lo giren ----------
+   En vertical y en pantalla angosta la presentación no se lee bien, así que se tapa con esta
+   pantalla: un teléfono que gira a horizontal, con el punto coral latiendo en su pantalla. Al
+   voltear el celular la media query deja de cumplirse y aparece la presentación. */
+#girar{display:none}
+@media (orientation:portrait) and (max-width:900px){
+  #girar{display:flex;position:fixed;inset:0;z-index:100;background:var(--fondo);color:var(--texto);
+    flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;padding:24px}
+  #deck,.riel-sup,.riel-inf,.zona,.avance,#fondo-puntos{visibility:hidden}
+}
+.girar-logo{width:150px;height:auto;margin-bottom:18px}
+:root[data-theme="light"] .girar-logo{filter:invert(1) hue-rotate(180deg)}
+.girar-tel{position:relative;width:62px;height:108px;border:3px solid var(--texto);border-radius:14px;
+  display:grid;place-items:center;animation:girar-tel 2.8s var(--ease) infinite}
+.girar-tel::before{content:'';position:absolute;top:7px;left:50%;width:16px;height:3px;border-radius:2px;
+  background:var(--texto);opacity:.5;transform:translateX(-50%)}
+.girar-tel i{width:12px;height:12px;border-radius:50%;background:var(--coral);animation:latido 1.4s var(--ease) infinite}
+@keyframes girar-tel{0%,18%{transform:rotate(0)}42%,78%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+.girar-tit{margin:10px 0 0;font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:1.9rem}
+.girar-tit .punto{color:var(--coral)}
+.girar-sub{margin:0;font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-3)}
+@media (prefers-reduced-motion:reduce){.girar-tel,.girar-tel i{animation:none}.girar-tel{transform:rotate(-90deg)}}
+
+/* Pantallas muy bajas (celular acostado, que se dibuja a 640 px de alto): las dos láminas más
+   densas aprietan su texto para caber sin scroll. */
+@media (max-height:700px){
+  .reco{padding:clamp(4px,.8vh,10px) 0}
+  .reco p{font-size:.72rem;line-height:1.32}
+  .reco .cuerpo{gap:3px}
+  .tabla-prensa td{font-size:.62rem;line-height:1.05;padding-top:1px;padding-bottom:1px}
+  .tabla-prensa th{font-size:.54rem;padding-top:2px;padding-bottom:2px}
+  /* sin la columna País: gana ancho para el titular y alto para caber */
+  .tabla-prensa th:nth-child(3),.tabla-prensa td.pais{display:none}
+  .tabla-prensa th:nth-child(2){width:26%}.tabla-prensa th:nth-child(5){width:7.5em}
+}

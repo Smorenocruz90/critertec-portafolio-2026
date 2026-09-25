@@ -1183,6 +1183,16 @@ export function arranca(plan) {
     ir(k >= 0 && k < lista.length ? lista[k] : iGrilla);
   };
   const sig = () => paso(1);
+  // En pantallas táctiles, deslizar a la izquierda avanza y a la derecha retrocede. Solo cuenta un
+  // gesto claramente horizontal, para no confundirlo con un toque ni con el scroll de la tabla.
+  let toque = null;
+  addEventListener('touchstart', (ev) => { const t = ev.touches[0]; toque = { x: t.clientX, y: t.clientY }; }, { passive: true });
+  addEventListener('touchend', (ev) => {
+    if (!toque) return;
+    const t = ev.changedTouches[0], dx = t.clientX - toque.x, dy = t.clientY - toque.y;
+    toque = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) (dx < 0 ? sig : () => paso(-1))();
+  }, { passive: true });
   const ant = () => paso(-1);
 
   // Grilla de proyectos: filtros, apertura de fichas y regreso. Va en el deck, que persiste
