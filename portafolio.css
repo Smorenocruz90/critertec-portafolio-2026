@@ -130,7 +130,9 @@ p{margin:0}
 .principios{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--borde);
   border:1px solid var(--borde);flex:1;min-height:0}
 .principio{background:var(--fondo);display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.principio .foto{position:relative;flex:none;aspect-ratio:16/9;overflow:hidden}
+/* La foto cede alto cuando falta espacio (pantallas bajas, celular acostado): el texto va completo
+   siempre. Con espacio de sobra se queda en 16:9, como antes. */
+.principio .foto{position:relative;flex:0 1 auto;aspect-ratio:16/9;min-height:clamp(56px,12vh,120px);overflow:hidden}
 .principio .foto img{width:100%;height:100%;object-fit:cover;display:block;
   filter:grayscale(.28) contrast(1.05) brightness(.95);
   transition:transform 1.4s var(--ease),filter .6s ease}
@@ -139,7 +141,7 @@ p{margin:0}
   background:linear-gradient(to top,var(--fondo) 1%,rgba(18,16,58,.3) 26%,transparent 60%)}
 .principio .txt{padding:clamp(14px,2.2vh,28px) clamp(15px,1.7vw,30px) clamp(16px,2.4vh,30px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  flex:1;min-height:0;gap:clamp(8px,1.2vh,15px)}
+  flex:1 0 auto;gap:clamp(8px,1.2vh,15px)}
 .principio .nn{font-family:var(--mono);font-size:clamp(.72rem,min(.95vw,1.5vh),1.15rem);letter-spacing:.18em;
   text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px}
 .principio .nn::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
